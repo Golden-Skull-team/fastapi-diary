@@ -45,6 +45,10 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
+      # 가상환경 설정
+      - name: Set up uv virtual environment
+        run: uv venv
+
       # uv를 사용하여 의존성 패키지들을 설치합니다.
       - name: Install dependencies using uv
         run: |
