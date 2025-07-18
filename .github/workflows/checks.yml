@@ -61,7 +61,7 @@ jobs:
       # ruff로 import 정렬 및 코드 스타일 검사
       - name: Run ruff (Code quality check)
         run: |
-          ruff check . 
+          uv run ruff check . 
 
       # black을 사용하여 PEP8 코드스타일을 준수했는지 체크합니다.
       - name: Run black (Code formatting)
