@@ -48,12 +48,15 @@ jobs:
       # uv를 사용하여 의존성 패키지들을 설치합니다.
       - name: Install dependencies using uv
         run: |
-          uv sync --dev
+          uv pip install --group dev
+
+      - name: Add uv virtual environment to PATH
+        run: |
+          echo "$(uv venv bin)" >> $GITHUB_PATH
 
       # ruff로 import 정렬 및 코드 스타일 검사
       - name: Run ruff (Code quality check)
         run: |
-          uv pip install --group dev
           uv run ruff check . 
 
       # black을 사용하여 PEP8 코드스타일을 준수했는지 체크합니다.
