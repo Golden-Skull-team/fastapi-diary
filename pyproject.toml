@@ -16,4 +16,4 @@ location = "./migrations"
 src_folder = "./."
 
 [dependency-groups]
-dev = ["aerich>=0.9.1", "tomlkit>=0.13.3", "black", "ruff", "mypy", "pytest", "httpx"]
+dev = ["aerich>=0.9.1", "tomlkit>=0.13.3", "black", "ruff", "mypy", "pytest", "httpx", "isort"]
