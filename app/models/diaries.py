@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from tortoise import Tortoise, fields
 from tortoise.models import Model
 from enum import Enum
-
-app = FastAPI()
+from app.models.base_model import BaseModel
+from app.models.tags import Tags
 
 # 모델 정의
-class MoodType(Enum):
+class MoodType(str, Enum):
     glad = 'glad'
     sad = 'sad'
     angry = 'angry'
@@ -15,15 +15,18 @@ class MoodType(Enum):
     soso = 'soso'
 
 
-class Diaries(Model):
-    id = fields.BigIntField(pk=True)
-    user_id = fields.ForeignKeyField('models.users', on_delete=fields.CASCADE, null=False)
+class Diaries(Model, BaseModel):
+    user = fields.ForeignKeyField('models.users', on_delete=fields.CASCADE, null=False)
     title = fields.CharField(max_length=100, null=False)
     content = fields.TextField(null=False)
     mood = fields.CharEnumField(MoodType)
     ai_summary = fields.TextField()
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now_add=True, null=True)
+    
+    tags: fields.ManyToManyRelation["Tags"] = fields.ManyToManyField(
+        "models.Tags",
+        related_name="diaries",
+        through='diary_tags'
+    )
 
     class Meta:
         table = 'diaries'
