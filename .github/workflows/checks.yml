@@ -63,6 +63,11 @@ jobs:
         run: |
           uv run ruff check . 
 
+      # isort
+      - name: Run isort (Code quality check)
+        run: |
+          uv run isort . --check
+
       # black을 사용하여 PEP8 코드스타일을 준수했는지 체크합니다.
       - name: Run black (Code formatting)
         run: |

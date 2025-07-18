@@ -182,6 +182,11 @@ prod = [
 [package.dev-dependencies]
 dev = [
     { name = "aerich" },
+    { name = "black" },
+    { name = "httpx" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "ruff" },
     { name = "tomlkit" },
 ]
 
@@ -205,6 +210,11 @@ provides-extras = ["dev", "prod"]
 [package.metadata.requires-dev]
 dev = [
     { name = "aerich", specifier = ">=0.9.1" },
+    { name = "black" },
+    { name = "httpx" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "ruff" },
     { name = "tomlkit", specifier = ">=0.13.3" },
 ]
 

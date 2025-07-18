@@ -1,8 +1,8 @@
 # from tortoise.models import Model
-from tortoise import Tortoise
+import os
 
 from dotenv import load_dotenv
-import os
+from tortoise import Tortoise
 
 load_dotenv()
 

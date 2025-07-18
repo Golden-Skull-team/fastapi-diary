@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from app.database import init_db, close_db
+
+from app.database import close_db, init_db
 
 app = FastAPI()
 

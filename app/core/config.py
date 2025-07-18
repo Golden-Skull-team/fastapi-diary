@@ -1,6 +1,7 @@
-from dotenv import load_dotenv
 import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # .env 파일 로드
 ENV_PATH = Path(".") / (".env.prod" if os.getenv("APP_ENV") == "production" else ".env")
