@@ -49,15 +49,15 @@ jobs:
       - name: Set up uv virtual environment
         run: uv venv
 
-      # uv를 사용하여 의존성 패키지들을 설치합니다.
-      - name: Install dependencies using uv
-        run: |
-          uv pip install --group dev
-
       - name: Add uv virtual environment to PATH
         run: |
           echo "$(uv venv bin)" >> $GITHUB_PATH
 
+      # uv를 사용하여 의존성 패키지들을 설치합니다.
+      - name: Install dependencies using uv
+        run: |
+          uv pip install --group dev
+      
       # ruff로 import 정렬 및 코드 스타일 검사
       - name: Run ruff (Code quality check)
         run: |
