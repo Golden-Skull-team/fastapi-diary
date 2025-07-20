@@ -7,9 +7,9 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
-    await init_db
+    await init_db()
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    await close_db
+    await close_db()
