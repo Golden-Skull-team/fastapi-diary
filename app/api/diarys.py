@@ -1,10 +1,9 @@
-from fastapi import APIRouter, HTTPException 
+from fastapi import APIRouter, HTTPException, Depends
 from starlette.status import (
     HTTP_204_NO_CONTENT,
     HTTP_404_NOT_FOUND,
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
-from app.schemas.get_diary_schemas import Diary, Tag, DiaryTag
 from app.schemas.create_diary_schemas import CreateDiary
 from app.schemas.get_diary_schemas import GetDiary
 from app.schemas.update_diary_schemas import (
@@ -20,8 +19,13 @@ from app.services.diary_service import (
     service_update_diary_content,
     service_update_diary_tag,
     service_update_diary_mood,
-    service_delete_diary
+    service_delete_diary,
+    service_get_user_diaries,
+    service_search_diaries
 )
+
+from typing import Optional
+from datetime import date
 
 
 diary_router = APIRouter(prefix="/diarys", tags=["Diary"])
@@ -41,6 +45,12 @@ async def api_get_diary(diary_url_code: str) -> GetDiary:
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
     return GetDiary(diary)
+
+
+@diary_router.get("/", description="내가 쓴 일기 전체 조회 (최신순)")
+async def api_get_my_diaries(current_user: User = Depends(get_current_user)) -> list[GetDiary]: # 대상우 도와줘
+    diaries = await service_get_user_diaries(current_user.id)
+    return [GetDiary(diary) for diary in diaries]
 
 
 @diary_router.patch("/{diary_url_code}/title", description="diary title를 수정합니다.")
@@ -101,5 +111,14 @@ async def api_delete_diary(diary_url_code: str):
         raise HTTPException( 
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
-    
     return {"message":"delete successfully@!@!@!@!@!@!@"}
+
+
+@diary_router.get("/search", description="날짜 또는 제목으로 다이어리 검색")
+async def api_search_diaries(
+    title: Optional[str] = None,
+    date: Optional[date] = Depends(),
+    current_user: User = Depends(get_current_user),
+) -> list[GetDiary]:
+    diaries = await service_search_diaries(current_user, title, date)
+    return [GetDiary(diary) for diary in diaries]

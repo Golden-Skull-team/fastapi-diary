@@ -3,12 +3,17 @@ from app.models.tags import TagsModel
 from app.utils.base62 import Base62
 import uuid
 
+from typing import Optional
+from datetime import date
 
 async def service_create_diary() -> DiaryModel:
     return await DiaryModel.create_diary(Base62.encode(uuid.uuid4().int))
 
 async def service_get_diary(url_code: str) -> DiaryModel | None:
     return await DiaryModel.get_by_url_code(url_code)
+
+async def service_get_user_diaries(user_id: int):
+    return await DiaryModel.get_by_user_id(user_id)
 
 async def service_update_diary_title(url_code: str, title: str) -> int:
     return await DiaryModel.update_title(url_code, title)
@@ -24,3 +29,6 @@ async def service_update_diary_mood(url_code: str, mood: str) -> int:
 
 async def service_delete_diary(url_code: str):
     return await DiaryModel.delete_diary(url_code)
+
+async def service_search_diaries(user_id: int, title: Optional[str] | None, date:Optional[date] | None):
+    return await DiaryModel.search_by_diary(user_id, title, date)
