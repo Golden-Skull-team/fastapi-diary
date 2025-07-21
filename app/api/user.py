@@ -1,7 +1,7 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import APIRouter, HTTPException
-from schemas.user import UserCreateSchema, UserResponseSchema
+from ..schemas.user import UserCreateSchema, UserResponseSchema
 from app.models.users import User
 from utils.security import hash_password
 

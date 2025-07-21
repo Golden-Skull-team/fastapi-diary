@@ -1,5 +1,7 @@
 import pytest
 from tortoise.contrib.test import finalizer, initializer
+import sys
+import os
 
 @pytest.fixture(scope="function", autouse=True)
 def initialize_db():
@@ -10,3 +12,5 @@ def initialize_db():
     )
     yield
     finalizer()
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
