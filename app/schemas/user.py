@@ -9,7 +9,7 @@ class UserCreateSchema(BaseModel):
     password: str = Field(..., min_length=8)
     nickname: str = Field(..., min_length=2, max_length=30)
     username: str = Field(..., min_length=2, max_length=30)
-    phone_number: Optional[str] = Field(None, max_length=15)
+    phone_number = Field(None, max_length=15)
 
 
 # 로그인 요청
@@ -31,9 +31,11 @@ class UserResponseSchema(BaseModel):
     nickname: str
     username: str
 
+    class Config:
+        orm_mode = True
 
 class UserDetailSchema(UserResponseSchema):
-    phone_number: Optional[str]
+    phone_number: str
     is_active: bool
     is_staff: bool
     is_admin: bool
