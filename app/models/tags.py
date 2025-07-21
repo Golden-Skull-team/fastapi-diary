@@ -4,7 +4,7 @@ from tortoise.models import Model
 from app.models.base_model import BaseModel
 
 # 모델 정의
-class TagsModel(Model, BaseModel):
+class TagModel(Model, BaseModel):
     name = fields.CharField(max_length=30, null=False, unique=True)
 
     class Meta:

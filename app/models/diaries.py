@@ -2,7 +2,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from tortoise import Model, fields
 from enum import Enum
-from models.base_model import BaseModel
+from .base_model import BaseModel
 from datetime import date
 
 
@@ -24,8 +24,13 @@ class DiaryModel(Model, BaseModel):
     mood = fields.CharEnumField(MoodType)
     ai_summary = fields.TextField()
 
+    tags = fields.ManyToManyField(
+        "models.TagModel",
+        related_name="diaries",
+        through="diary_tag"
+    )
     class Meta:
-        table = 'diaries'
+        table = 'diary'
 
     @classmethod
     async def create_diary(cls, url_code: str) -> DiaryModel:
@@ -33,7 +38,7 @@ class DiaryModel(Model, BaseModel):
     
     @classmethod
     async def get_by_url_code(cls, url_code: str) -> DiaryModel | None:
-        return await cls.filter(url_code=url_code).get_or_none()
+        return await cls.filter(url_code=url_code).prefetch_related("tags").get_or_none()
     
     @classmethod
     async def get_by_user_id(cls, user_id: int):
@@ -63,3 +68,7 @@ class DiaryModel(Model, BaseModel):
         if date:
             qs = qs.filter(created_at__date=date)
         return await qs.order_by("created_at")
+    
+    @classmethod
+    async def get_diary_by_tag(cls, url_code: str, tag_name: str) -> list[DiaryModel]:
+        return await cls.filter(url_code=url_code, tag_name=tag_name).prefetch_related("tags")

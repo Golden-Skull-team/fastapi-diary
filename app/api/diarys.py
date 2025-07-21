@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from starlette.status import (
-    HTTP_204_NO_CONTENT,
-    HTTP_404_NOT_FOUND,
-    HTTP_422_UNPROCESSABLE_ENTITY,
+    HTTP_404_NOT_FOUND
 )
 from app.schemas.create_diary_schemas import CreateDiary
 from app.schemas.get_diary_schemas import GetDiary
@@ -13,7 +11,7 @@ from app.schemas.update_diary_schemas import (
     UpdateDiaryMood
 )
 from app.services.diary_service import (
-    service_create_diary,
+    service_create_diary_with_tags,
     service_get_diary,
     service_update_diary_title,
     service_update_diary_content,
@@ -32,8 +30,9 @@ diary_router = APIRouter(prefix="/diarys", tags=["Diary"])
 
 
 @diary_router.post("/", description="Diary 생성")
-async def api_create_diary() -> CreateDiary:
-    return CreateDiary(url_code=(await service_create_diary()).url_code)
+async def api_create_diary(create_diary: CreateDiary) -> CreateDiary:
+    diary = await service_create_diary_with_tags(create_diary)
+    return CreateDiary(url_code=diary.url_code)
 
 
 @diary_router.get("/{diary_url_code}", description="Diary 조회")
@@ -121,4 +120,12 @@ async def api_search_diaries(
     current_user: User = Depends(get_current_user),
 ) -> list[GetDiary]:
     diaries = await service_search_diaries(current_user, title, date)
+    return [GetDiary(diary) for diary in diaries]
+
+@diary_router.get("/{tag_name}/diarys", description="태그로 다이어리 검색")
+async def api_search_diaries_tag(
+    tag: str,
+    current_user: User = Depends(get_current_user)
+) -> list[GetDiary]:
+    diaries = await service_search_diaries(current_user, tag)
     return [GetDiary(diary) for diary in diaries]
