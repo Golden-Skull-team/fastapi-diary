@@ -4,7 +4,7 @@ from tortoise.models import Model
 from app.models.base_model import BaseModel
 
 # 모델 정의
-class DiaryTags(Model, BaseModel):
+class DiaryTags(BaseModel):
     diaries = fields.ForeignKeyField('models.diaries', on_delete=fields.CASCADE, null=False)
     tags = fields.ForeignKeyField('models.tags', on_delete=fields.CASCADE, null=False)
 

@@ -15,7 +15,7 @@ class MoodType(str, Enum):
     soso = 'soso'
 
 
-class Diaries(Model, BaseModel):
+class Diaries(BaseModel):
     user = fields.ForeignKeyField('models.users', on_delete=fields.CASCADE, null=False)
     title = fields.CharField(max_length=100, null=False)
     content = fields.TextField(null=False)

@@ -4,7 +4,7 @@ from tortoise.models import Model
 from app.models.base_model import BaseModel
 
 # 모델 정의
-class Users(Model, BaseModel):
+class Users(BaseModel):
     email = fields.CharField(max_length=50, unique=True)
     password = fields.CharField(max_length=255, null=False)
     nickname = fields.CharField(max_length=30, null=False)

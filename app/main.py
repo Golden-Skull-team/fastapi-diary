@@ -1,15 +1,12 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-from app.database import close_db, init_db
+from app.database import init_db, close_db
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+    await close_db()
 
-
-@app.on_event("startup")
-async def startup_event():
-    await init_db
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await close_db
+app = FastAPI(lifespan=lifespan)
