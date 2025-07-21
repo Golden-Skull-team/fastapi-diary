@@ -31,8 +31,9 @@ class UserResponseSchema(BaseModel):
     nickname: str
     username: str
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True,
+    }
 
 class UserDetailSchema(UserResponseSchema):
     phone_number: str
