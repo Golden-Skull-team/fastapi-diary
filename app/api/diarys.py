@@ -19,7 +19,8 @@ from app.services.diary_service import (
     service_update_diary_mood,
     service_delete_diary,
     service_get_user_diaries,
-    service_search_diaries
+    service_search_diaries,
+    service_get_diary_by_tag
 )
 
 from typing import Optional
@@ -54,9 +55,9 @@ async def api_get_my_diaries(current_user: User = Depends(get_current_user)) -> 
 
 @diary_router.patch("/{diary_url_code}/title", description="diary title를 수정합니다.")
 async def api_update_diary_title(
-    diary_url_code: str, update_diary_Title: UpdateDiaryTitle
+    diary_url_code: str, update_diary_title: UpdateDiaryTitle
 ) -> GetDiary:
-    diary = await service_update_diary_title(diary_url_code, update_diary_Title)
+    diary = await service_update_diary_title(diary_url_code, update_diary_title)
 
     if diary is None: 
         raise HTTPException( 
@@ -124,8 +125,8 @@ async def api_search_diaries(
 
 @diary_router.get("/{tag_name}/diarys", description="태그로 다이어리 검색")
 async def api_search_diaries_tag(
-    tag: str,
+    tag_name: str,
     current_user: User = Depends(get_current_user)
 ) -> list[GetDiary]:
-    diaries = await service_search_diaries(current_user, tag)
+    diaries = await service_get_diary_by_tag(current_user, tag_name)
     return [GetDiary(diary) for diary in diaries]
