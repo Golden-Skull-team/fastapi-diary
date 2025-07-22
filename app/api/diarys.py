@@ -25,9 +25,9 @@ from app.services.diary_service import (
 
 from typing import Optional
 from datetime import date
+from app.models.users import Users
 
-
-diary_router = APIRouter(prefix="/diarys", tags=["Diary"])
+diary_router = APIRouter(prefix="/diaries", tags=["Diary"])
 
 
 @diary_router.post("/", description="Diary 생성")
@@ -47,8 +47,8 @@ async def api_get_diary(diary_url_code: str) -> GetDiary:
     return GetDiary(diary)
 
 
-@diary_router.get("/", description="내가 쓴 일기 전체 조회 (최신순)")
-async def api_get_my_diaries(current_user: User = Depends(get_current_user)) -> list[GetDiary]: # 대상우 도와줘
+@diary_router.get("/", description="내가 쓴 일기 전체 조회 (최신순)") # get_current_user
+async def api_get_my_diaries(current_user: Users = Depends()) -> list[GetDiary]: # 대상우 도와줘
     diaries = await service_get_user_diaries(current_user.id)
     return [GetDiary(diary) for diary in diaries]
 
@@ -118,15 +118,15 @@ async def api_delete_diary(diary_url_code: str):
 async def api_search_diaries(
     title: Optional[str] = None,
     date: Optional[date] = Depends(),
-    current_user: User = Depends(get_current_user),
+    current_user: Users = Depends() # get_current_user
 ) -> list[GetDiary]:
     diaries = await service_search_diaries(current_user, title, date)
     return [GetDiary(diary) for diary in diaries]
 
-@diary_router.get("/{tag_name}/diarys", description="태그로 다이어리 검색")
+@diary_router.get("/{tag_name}/diaries", description="태그로 다이어리 검색")
 async def api_search_diaries_tag(
     tag_name: str,
-    current_user: User = Depends(get_current_user)
+    current_user: Users = Depends() # get_current_user
 ) -> list[GetDiary]:
     diaries = await service_get_diary_by_tag(current_user, tag_name)
     return [GetDiary(diary) for diary in diaries]
