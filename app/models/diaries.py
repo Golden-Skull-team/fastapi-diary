@@ -16,17 +16,19 @@ class MoodType(str, Enum):
 
 
 class Diaries(BaseModel):
-    user = fields.ForeignKeyField('models.users', on_delete=fields.CASCADE, null=False)
+    user = fields.ForeignKeyField('models.Users', on_delete=fields.CASCADE, null=False)
     title = fields.CharField(max_length=100, null=False)
     content = fields.TextField(null=False)
     mood = fields.CharEnumField(MoodType)
-    ai_summary = fields.TextField()
+    ai_summary = fields.TextField(null=True)
     
     tags: fields.ManyToManyRelation["Tags"] = fields.ManyToManyField(
         "models.Tags",
         related_name="diaries",
-        through='diary_tags'
+        through='models.DiaryTags'
     )
 
     class Meta:
         table = 'diaries'
+
+__all__ = ["Diaries", "MoodType"]

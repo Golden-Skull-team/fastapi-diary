@@ -9,3 +9,5 @@ class Tags(BaseModel):
 
     class Meta:
         table = 'tags'
+
+__all__ = ["Tags"]
