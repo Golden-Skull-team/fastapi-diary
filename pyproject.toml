@@ -1,0 +1,19 @@
+[project]
+name = "fastapi-diary"
+version = "0.1.0"
+description = "Diary fastapi 실습 project"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["fastapi", "uvicorn", "python-dotenv", "tortoise-orm", "asyncpg", "aerich"]
+
+[project.optional-dependencies]
+dev = ["black", "ruff", "mypy", "pytest", "httpx"]
+prod = ["gunicorn"]
+
+[tool.aerich]
+tortoise_orm = "app.database.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
+
+[dependency-groups]
+dev = ["aerich>=0.9.1", "tomlkit>=0.13.3", "black", "ruff", "mypy", "pytest", "httpx", "isort"]
