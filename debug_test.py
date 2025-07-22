@@ -1,4 +1,5 @@
 import asyncio
+import pytest
 from tortoise import Tortoise
 
 TORTOISE_ORM_TEST = {
@@ -11,6 +12,7 @@ TORTOISE_ORM_TEST = {
     },
 }
 
+@pytest.mark.asyncio
 async def test_tortoise_connection():
     try:
         print("🔄 Tortoise ORM 초기화 시도...")
