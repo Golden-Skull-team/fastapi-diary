@@ -22,7 +22,7 @@ class CreateDiary(BaseModel):
 """
 from google import genai
 # from google.genai import types
-from gemini_connect import api_key
+from app.core.gemini_connect import api_key
 # import gemini_connect
 
 client = genai.Client(api_key=api_key)

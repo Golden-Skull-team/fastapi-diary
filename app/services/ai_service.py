@@ -13,3 +13,22 @@ class CreateDiary(BaseModel):
     tags : list[str]
 """
 
+from google import genai
+# from app.core.gemini_connect import api_key
+from gemini_connect import api_key
+import prompt
+
+client = genai.Client(api_key=api_key)
+
+
+# 요약
+def diary_request():
+    # request = prompt.request_prompt()
+    question = prompt.req_t()    
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=question
+    )
+    print(response)
+
+diary_request()
