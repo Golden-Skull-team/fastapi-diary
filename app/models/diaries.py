@@ -4,10 +4,10 @@ from tortoise import Model, fields
 from enum import Enum
 from .base_model import BaseModel
 from datetime import date
-
+from app.models.tags import Tags
 
 # 모델 정의
-class MoodType(Enum):
+class MoodType(str, Enum):
     glad = 'glad'
     sad = 'sad'
     angry = 'angry'
@@ -16,28 +16,27 @@ class MoodType(Enum):
     soso = 'soso'
 
 
-class DiaryModel(Model, BaseModel):
-    url_code = fields.CharField(max_length=255, unique=True)
-    user_id = fields.ForeignKeyField('models.users', on_delete=fields.CASCADE, null=False)
+class Diaries(BaseModel):
+    user = fields.ForeignKeyField('models.Users', on_delete=fields.CASCADE, null=False)
     title = fields.CharField(max_length=100, null=False)
     content = fields.TextField(null=False)
     mood = fields.CharEnumField(MoodType)
-    ai_summary = fields.TextField()
+    ai_summary = fields.TextField(null=True)
 
-    tags = fields.ManyToManyField(
-        "models.TagModel",
+    tags: fields.ManyToManyRelation["Tags"] = fields.ManyToManyField(
+        "models.Tags",
         related_name="diaries",
-        through="diary_tag"
+        through='models.DiaryTags'
     )
     class Meta:
         table = 'diary'
 
     @classmethod
-    async def create_diary(cls, url_code: str) -> DiaryModel:
+    async def create_diary(cls, url_code: str) -> Diaries:
         return await cls.create(url_code=url_code)
     
     @classmethod
-    async def get_by_url_code(cls, url_code: str) -> DiaryModel | None:
+    async def get_by_url_code(cls, url_code: str) -> Diaries | None:
         return await cls.filter(url_code=url_code).prefetch_related("tags").get_or_none()
     
     @classmethod
@@ -61,7 +60,7 @@ class DiaryModel(Model, BaseModel):
         return await cls.filter(url_code=url_code).delete()
     
     @classmethod
-    async def search_by_diary(cls, user_id: int, title: str | None, date: date | None) -> DiaryModel | None:
+    async def search_by_diary(cls, user_id: int, title: str | None, date: date | None) -> Diaries | None:
         qs = cls.filter(user_id=user_id)
         if title:
             qs = qs.filter(title__icontains=title)
@@ -70,5 +69,7 @@ class DiaryModel(Model, BaseModel):
         return await qs.order_by("created_at")
     
     @classmethod
-    async def get_diary_by_tag(cls, url_code: str, tag_name: str) -> list[DiaryModel]:
+    async def get_diary_by_tag(cls, url_code: str, tag_name: str) -> list[Diaries]:
         return await cls.filter(url_code=url_code, tag_name=tag_name).prefetch_related("tags")
+    
+__all__ = ["Diaries", "MoodType"]

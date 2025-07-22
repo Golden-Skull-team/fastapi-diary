@@ -4,7 +4,7 @@ from tortoise.models import Model
 from app.models.base_model import BaseModel
 
 # 모델 정의
-class TagModel(Model, BaseModel):
+class Tags(BaseModel):
     name = fields.CharField(max_length=30, null=False, unique=True)
 
     class Meta:
@@ -14,3 +14,4 @@ class TagModel(Model, BaseModel):
     async def update_tag(cls, url_code: str, tags: list[str]) -> int:
         return await cls.filter(url_code=url_code).update(tags=tags)
     
+__all__ = ["Tags"]
