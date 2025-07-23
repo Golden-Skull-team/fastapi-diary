@@ -1,27 +1,31 @@
 from app.models import diaries
-# 일기 요약 prompt
 
-diary = diaries.Diaries.content()
+# 일기 내용을 비동기로 DB에서 조회하는 함수
+async def get_diary_content(diary_id: int) -> str:
+    diary_instance = await diaries.Diaries.get(id=diary_id)
+    return diary_instance.content
 
+# 일기 요약 prompt 생성 함수
 def request_prompt(diary: str) -> str:
     return f'''
-    아래는 사용자가 작성한 일기 내용입니다. 이 일기의 핵심 내용을 간결하고 명확하게 요약해 주세요.
+아래는 사용자가 작성한 일기 내용입니다. 이 일기의 핵심 내용을 간결하고 명확하게 요약해 주세요.
 
-    ---
-    {diary}
-    ---
+---
+{diary}
+---
 
-    요약은 2~3문장 이내로 작성해 주세요.
-    '''
+요약은 2~3문장 이내로 작성해 주세요.
+'''
 
-# 감정 분석 prompt
-def mood_analyze_prompt(diary:str) -> str:
+# 감정 분석 prompt 생성 함수
+def mood_analyze_prompt(diary: str) -> str:
     return f'''
-    아래는 사용자가 작성한 일기 내용입니다. 이 일기를 보고 감정을 분석해주세요.
-    ---
-    {diary}
-    ---
-    '''
+아래는 사용자가 작성한 일기 내용입니다. 이 일기를 보고 감정을 분석해주세요.
+
+---
+{diary}
+---
+'''
 
 # test
 # def req_t():

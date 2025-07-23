@@ -38,7 +38,7 @@ def service_diary_request():
     return response
 
 # 감정분석
-feelings = ai_schema.Feeling()
+feelings = [e.value for e in ai_schema.Feeling]
 
 def service_mood_analyze(feelings):
     question = mood_analyze_prompt()
