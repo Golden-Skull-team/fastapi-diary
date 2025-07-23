@@ -26,6 +26,7 @@ from app.services.diary_service import (
 from typing import Optional
 from datetime import date
 from app.models.users import Users
+from app.models.diaries import Diaries
 from app.core.dependencies.auth import get_current_user
 
 diary_router = APIRouter(prefix="/diaries", tags=["Diary"])
@@ -39,6 +40,22 @@ async def api_create_diary(
     diary = await service_create_diary_with_tags(create_diary, current_user.id)
     return diary 
 
+@diary_router.get("/latest", description="내가 쓴 일기 전체 조회 (최신순)")
+async def api_get_my_diaries(current_user: Users = Depends(get_current_user)) -> list[GetDiary]:
+    print(f"현재 로그인한 유저 ID: {current_user.id}")  # 여기 추가
+
+    diaries = await service_get_user_diaries(current_user.id)
+    if diaries:
+        print("일기 개수:", len(diaries))
+        print("첫 번째 일기 데이터 타입:", type(diaries[0]))
+    else:
+        print("작성된 일기가 없습니다.")
+
+    result = []
+    for diary in diaries:
+        diary['user'] = diary.pop("user_id")
+        result.append(GetDiary.model_validate(diary))
+    return result
 
 @diary_router.get("/{diary_url_code}", description="Diary 조회")
 async def api_get_diary(diary_url_code: str) -> GetDiary:
@@ -48,14 +65,7 @@ async def api_get_diary(diary_url_code: str) -> GetDiary:
         raise HTTPException( 
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
-    return GetDiary(diary)
-
-
-@diary_router.get("/", description="내가 쓴 일기 전체 조회 (최신순)") # get_current_user
-async def api_get_my_diaries(current_user: Users = Depends()) -> list[GetDiary]: # 대상우 도와줘
-    diaries = await service_get_user_diaries(current_user.id)
-    return [GetDiary(diary) for diary in diaries]
-
+    return GetDiary.model_validate(diary)
 
 @diary_router.patch("/{diary_url_code}/title", description="diary title를 수정합니다.")
 async def api_update_diary_title(
@@ -67,7 +77,7 @@ async def api_update_diary_title(
         raise HTTPException( 
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
-    return GetDiary(diary)
+    return GetDiary.model_validate(diary)
 
 
 @diary_router.patch("/{diary_url_code}/content", description="diary content를 수정합니다.")
@@ -80,7 +90,7 @@ async def api_update_diary_content(
         raise HTTPException( 
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
-    return GetDiary(diary)
+    return GetDiary.model_validate(diary)
 
 @diary_router.patch("/{diary_url_code}/tag", description="diary tag를 수정합니다.")
 async def api_update_diary_tag(
@@ -92,7 +102,7 @@ async def api_update_diary_tag(
         raise HTTPException( 
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
-    return GetDiary(diary)
+    return GetDiary.model_validate(diary)
 
 @diary_router.patch("/{diary_url_code}/mood", description="diary mood를 수정합니다.")
 async def api_update_diary_mood(
@@ -104,7 +114,7 @@ async def api_update_diary_mood(
         raise HTTPException( 
             status_code=HTTP_404_NOT_FOUND, detail=f"diary with url_code: {diary_url_code} not found"
         )
-    return GetDiary(diary)
+    return GetDiary.model_validate(diary)
 
 
 @diary_router.delete("/{diary_url_code}/delete", description="diary를 삭제합니다.")
@@ -125,7 +135,7 @@ async def api_search_diaries(
     current_user: Users = Depends() # get_current_user
 ) -> list[GetDiary]:
     diaries = await service_search_diaries(current_user, title, date)
-    return [GetDiary(diary) for diary in diaries]
+    return [GetDiary.model_validate(diary) for diary in diaries]
 
 @diary_router.get("/{tag_name}/diaries", description="태그로 다이어리 검색")
 async def api_search_diaries_tag(
@@ -133,4 +143,4 @@ async def api_search_diaries_tag(
     current_user: Users = Depends() # get_current_user
 ) -> list[GetDiary]:
     diaries = await service_get_diary_by_tag(current_user, tag_name)
-    return [GetDiary(diary) for diary in diaries]
+    return [GetDiary.model_validate(diary) for diary in diaries]
