@@ -9,9 +9,5 @@ class Tags(BaseModel):
 
     class Meta:
         table = 'tags'
-    
-    @classmethod
-    async def update_tag(cls, url_code: str, tags: list[str]) -> int:
-        return await cls.filter(url_code=url_code).update(tags=tags)
-    
+        
 __all__ = ["Tags"]
