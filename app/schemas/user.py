@@ -43,3 +43,9 @@ class UserDetailSchema(UserResponseSchema):
     last_login: Optional[datetime]
     created_at: datetime
     updated_at: Optional[datetime]
+
+# 회원정보 수정
+class UserUpdateSchema(BaseModel):
+    nickname: Optional[str] = Field(None, min_length=2, max_length=30)
+    username: Optional[str] = Field(None, min_length=2, max_length=30)
+    phone_number: Optional[str] = Field(None, max_length=15)
