@@ -13,3 +13,11 @@ async def request_gemini(gemini_data: GeminiRequest):
     if gemini is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f'{gemini} Not Found')
     return GeminiRequest(gemini)
+
+
+@router.post("/gemini/mood", response_model=GeminiRequest, status_code=201)
+async def request_mood(gemini_data: GeminiRequest):
+    gemini = await service_mood_analyze(gemini_data)
+    if gemini is None:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f'{gemini} Not Found')
+    return GeminiRequest(gemini)
