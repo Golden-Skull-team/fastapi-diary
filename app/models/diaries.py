@@ -22,14 +22,15 @@ class Diaries(BaseModel):
     content = fields.TextField(null=False)
     mood = fields.CharEnumField(MoodType)
     ai_summary = fields.TextField(null=True)
-
+    url_code = fields.CharField(max_length=255, unique=True, null=False)
+    
     tags: fields.ManyToManyRelation["Tags"] = fields.ManyToManyField(
         "models.Tags",
         related_name="diaries",
         through='models.DiaryTags'
     )
     class Meta:
-        table = 'diary'
+        table = 'diaries'
 
     @classmethod
     async def create_diary(cls, url_code: str) -> Diaries:

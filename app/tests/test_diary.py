@@ -11,7 +11,7 @@ from starlette.status import (
 from tortoise.contrib.test import TestCase
 
 from app.main import app
-from app.models.diaries import DiaryModel
+from app.models.diaries import Diaries
 
 
 class TestDiaryRouter(TestCase):
@@ -26,13 +26,13 @@ class TestDiaryRouter(TestCase):
         # Then
         self.assertEqual(response.status_code, HTTP_200_OK)
         url_code = response.json()["url_code"]
-        self.assertTrue(await DiaryModel.filter(url_code=url_code).exists())
+        self.assertTrue(await Diaries.filter(url_code=url_code).exists())
 
 
 class TestDiaryGet(TestCase):
     async def test_get_existing_diary(self):
         # Given
-        diary = await DiaryModel.create(user_id=1, title="Test", content="Content", url_code="abc123")
+        diary = await Diaries.create(user_id=1, title="Test", content="Content", url_code="abc123")
 
         # When
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -54,7 +54,7 @@ class TestDiaryGet(TestCase):
 class TestDiaryDelete(TestCase):
     async def test_delete_diary(self):
         # Given
-        diary = await DiaryModel.create(user_id=1, title="To be deleted", url_code="delete123")
+        diary = await Diaries.create(user_id=1, title="To be deleted", url_code="delete123")
 
         # When
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -62,14 +62,14 @@ class TestDiaryDelete(TestCase):
 
         # Then
         assert response.status_code == 200
-        exists = await DiaryModel.filter(url_code="delete123").exists()
+        exists = await Diaries.filter(url_code="delete123").exists()
         assert not exists
 
 
 class TestDiarySearch(TestCase):
     async def test_search_by_title(self):
-        await DiaryModel.create(user_id=1, title="My happy diary", url_code="a1")
-        await DiaryModel.create(user_id=1, title="Sad diary", url_code="a2")
+        await Diaries.create(user_id=1, title="My happy diary", url_code="a1")
+        await Diaries.create(user_id=1, title="Sad diary", url_code="a2")
 
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/diarys?title=happy")
@@ -81,7 +81,7 @@ class TestDiarySearch(TestCase):
 
     async def test_search_by_date(self):
         today = datetime.now().date()
-        await DiaryModel.create(user_id=1, title="Today", url_code="b1", created_at=today)
+        await Diaries.create(user_id=1, title="Today", url_code="b1", created_at=today)
 
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get(f"/diarys?date={today}")
@@ -93,7 +93,7 @@ class TestDiarySearch(TestCase):
 class TestDiaryUpdate(TestCase):
     async def asyncSetUp(self):
         self.client = AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
-        self.diary = await DiaryModel.create(user_id=1, title="Old Title", url_code="test-title")
+        self.diary = await Diaries.create(user_id=1, title="Old Title", url_code="test-title")
 
     async def asyncTearDown(self):
         await self.client.aclose()
