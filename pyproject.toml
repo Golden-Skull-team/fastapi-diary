@@ -7,8 +7,8 @@ requires-python = ">=3.13"
 dependencies = ["fastapi", "uvicorn", "python-dotenv", "tortoise-orm", "asyncpg", "aerich", "google-generativeai", "passlib[bcrypt]", "python-jose[cryptography]"]
 
 [project.optional-dependencies]
-dev = ["black", "ruff", "mypy", "pytest", "httpx"]
-prod = ["gunicorn"]
+dev = ["aerich>=0.9.1", "tomlkit>=0.13.3", "black", "ruff", "mypy", "pytest", "httpx", "isort"]
+prod = ["gunicorn", "uvicorn[standard]"]
 
 [tool.aerich]
 tortoise_orm = "app.database.TORTOISE_ORM"
