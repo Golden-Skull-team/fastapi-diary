@@ -42,20 +42,35 @@ async def api_create_diary(
 
 @diary_router.get("/latest", description="내가 쓴 일기 전체 조회 (최신순)")
 async def api_get_my_diaries(current_user: Users = Depends(get_current_user)) -> list[GetDiary]:
-    print(f"현재 로그인한 유저 ID: {current_user.id}")  # 여기 추가
+    print(f"현재 로그인한 유저 ID: {current_user.id}")
 
     diaries = await service_get_user_diaries(current_user.id)
-    if diaries:
-        print("일기 개수:", len(diaries))
-        print("첫 번째 일기 데이터 타입:", type(diaries[0]))
-    else:
+
+    if not diaries:
         print("작성된 일기가 없습니다.")
+        return []
+
+    print("일기 개수:", len(diaries))
+    print("첫 번째 일기 데이터 타입:", type(diaries[0]))
 
     result = []
     for diary in diaries:
-        diary['user'] = diary.pop("user_id")
-        result.append(GetDiary.model_validate(diary))
+        user_id = diary.pop("user_id", None)
+        diary["user"] = {"id": user_id} if user_id is not None else {"id": 0}
+
+        mood = diary.get("mood")
+        if hasattr(mood, "value"):
+            diary["mood"] = mood.value
+
+        try:
+            validated = GetDiary.model_validate(diary)
+            result.append(validated)
+        except Exception as e:
+            print("검증 실패한 일기:", diary)
+            print("에러:", e)
+
     return result
+
 
 @diary_router.get("/{diary_url_code}", description="Diary 조회")
 async def api_get_diary(diary_url_code: str) -> GetDiary:

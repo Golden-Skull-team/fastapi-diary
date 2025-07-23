@@ -40,11 +40,21 @@ async def service_get_diary(url_code: str) -> dict | None:
 
 
 async def service_get_user_diaries(user_id: int) -> list[dict]:
-    diaries = await Diaries.filter(user=user_id).order_by("-id").values(
+    diaries = await Diaries.filter(user_id=user_id).order_by("-id").values(
         "url_code", "user_id", "title", "content", "mood", "ai_summary"
     )
+
     for diary in diaries:
-        diary["user"] = diary.pop("user_id")  # user_id -> user
+        user_id_value = diary.pop("user_id", None)
+        print(f"[DEBUG] Original user_id: {user_id_value}, Diary before setting user: {diary}")
+        diary["user"] = {"id": user_id_value} if user_id_value is not None else {"id": 0}
+
+        mood_value = diary.get("mood")
+        if hasattr(mood_value, "value"):
+            diary["mood"] = mood_value.value
+        print(f"[DEBUG] Diary after setting user and mood: {diary}")
+
+    print(f"[DEBUG] Final diaries list: {diaries}")
     return diaries
 
 

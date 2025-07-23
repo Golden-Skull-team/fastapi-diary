@@ -4,7 +4,6 @@ from app.schemas.frozen_config import FROZEN_CONFIG
 
 class UserInDiary(BaseModel):
     id: int
-
     class Config:
         from_attributes = True
 
@@ -15,7 +14,7 @@ class GetDiary(BaseModel):
     }
 
     url_code: str
-    user: int
+    user: UserInDiary
     title: str
     content: str
     mood: str
