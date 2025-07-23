@@ -8,16 +8,20 @@ from jose import JWTError
 from app.core.config import SECRET_KEY, ALGORITHM
 from jose import jwt
 from datetime import timedelta
+from fastapi import Form
 
 router = APIRouter()
 
 @router.post("/login", response_model=TokenResponseSchema)
-async def login_user(user_data: UserLoginSchema, response: Response):
-    user = await Users.get_or_none(email=user_data.email)
-    if not user or not verify_password(user_data.password, user.password):
+async def login_user(
+    username: str = Form(...),
+    password: str = Form(...),
+    response: Response = None,
+):
+    user = await Users.get_or_none(email=username)
+    if not user or not verify_password(password, user.password):
         raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
 
-    # access, refresh 토큰 생성
     access_token = create_access_token({"sub": str(user.id)})
     refresh_token = create_refresh_token({"sub": str(user.id)})
 

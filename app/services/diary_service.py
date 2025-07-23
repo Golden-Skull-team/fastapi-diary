@@ -7,13 +7,13 @@ import uuid
 from typing import Optional
 from datetime import date
 
-async def service_create_diary_with_tags(create_diary: CreateDiary) -> Diaries:
+async def service_create_diary_with_tags(create_diary: CreateDiary, user_id: int) -> Diaries:
     url_code = Base62.encode(uuid.uuid4().int)
     diary = await Diaries.create(
         title=create_diary.title,
         content=create_diary.content,
         mood=create_diary.mood,
-        user_id=create_diary.user_id,
+        user_id=user_id,
         url_code=url_code,
     )
 

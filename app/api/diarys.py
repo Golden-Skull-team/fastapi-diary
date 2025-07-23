@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from starlette.status import (
     HTTP_404_NOT_FOUND
 )
-from app.schemas.create_diary_schemas import CreateDiary
+from app.schemas.create_diary_schemas import CreateDiary, DiaryResponse
 from app.schemas.get_diary_schemas import GetDiary
 from app.schemas.update_diary_schemas import (
     UpdateDiaryTitle,
@@ -26,14 +26,18 @@ from app.services.diary_service import (
 from typing import Optional
 from datetime import date
 from app.models.users import Users
+from app.core.dependencies.auth import get_current_user
 
 diary_router = APIRouter(prefix="/diaries", tags=["Diary"])
 
 
-@diary_router.post("/", description="Diary 생성")
-async def api_create_diary(create_diary: CreateDiary) -> CreateDiary:
-    diary = await service_create_diary_with_tags(create_diary)
-    return CreateDiary(url_code=diary.url_code)
+@diary_router.post("/", response_model=DiaryResponse, description="Diary 생성")
+async def api_create_diary(
+    create_diary: CreateDiary,
+    current_user: Users = Depends(get_current_user),
+):
+    diary = await service_create_diary_with_tags(create_diary, current_user.id)
+    return diary 
 
 
 @diary_router.get("/{diary_url_code}", description="Diary 조회")

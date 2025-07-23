@@ -14,42 +14,36 @@ class CreateDiary(BaseModel):
 """
 
 from google import genai
-# from app.core.gemini_connect import api_key
-# from gemini_connect import api_key
 from app.core.config import Settings
 from app.schemas import ai_schema
-# import promp
 from app.services.prompt import request_prompt, mood_analyze_prompt
 
 client = genai.Client(api_key=Settings.GEMINI_API_KEY)
-# client = genai.Client(api_key='')
-
-
 
 # 요약
-def service_diary_request():
-    question = request_prompt()
-    # question = prompt.req_t()
+def service_diary_request(diary_content: str):
+    question = request_prompt(diary_content)
     response = client.models.generate_content(
-        model = 'gemini-2.5-flash',
+        model='gemini-2.5-flash',
         contents=question
     )
-    # print(response)
     return response
 
 # 감정분석
 feelings = [e.value for e in ai_schema.Feeling]
 
-def service_mood_analyze(feelings):
-    question = mood_analyze_prompt()
-    # question = prompt.ana_t()
+def service_mood_analyze(diary_content: str) -> str:
+    question = mood_analyze_prompt(diary_content)
     response = client.models.generate_content(
         model='gemini-2.5-flash',
         contents=question,
         config={
             'response_mime_type': 'text/x.enum',
-            'response_schema': feelings,
+            'response_schema': ai_schema.Feeling,
         },
     )
-    # print(response)
-    return response
+
+    try:
+        return response.candidates[0].content.parts[0].text
+    except (AttributeError, IndexError):
+        raise ValueError("감정 분석 결과를 추출할 수 없습니다.")

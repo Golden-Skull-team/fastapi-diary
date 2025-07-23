@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS "diaries" (
     "content" TEXT NOT NULL,
     "mood" VARCHAR(9) NOT NULL,
     "ai_summary" TEXT,
+    "url_code" VARCHAR(255) NOT NULL UNIQUE,
     "user_id" BIGINT NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE
 );
 COMMENT ON COLUMN "diaries"."mood" IS 'glad: glad\nsad: sad\nangry: angry\ntired: tired\nannoyance: annoyance\nsoso: soso';

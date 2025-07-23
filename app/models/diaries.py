@@ -22,6 +22,7 @@ class Diaries(BaseModel):
     content = fields.TextField(null=False)
     mood = fields.CharEnumField(MoodType)
     ai_summary = fields.TextField(null=True)
+    url_code = fields.CharField(max_length=255, unique=True, null=False)
     
     tags: fields.ManyToManyRelation["Tags"] = fields.ManyToManyField(
         "models.Tags",
