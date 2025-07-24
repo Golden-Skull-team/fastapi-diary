@@ -4,8 +4,10 @@ from app.schemas.frozen_config import FROZEN_CONFIG
 
 class UserInDiary(BaseModel):
     id: int
-    class Config:
-        from_attributes = True
+    model_config = {
+        
+        "from_attributes": True,
+    }
 
 class GetDiary(BaseModel):
     model_config = {
